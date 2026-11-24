@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1030">
-<title>Our Little Universe</title>
+<title>دنیای کوچک ما</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;800&display=swap" rel="stylesheet">
@@ -12,13 +12,13 @@
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
 <body>
-<canvas id="sky" aria-label="Night sky of memories"></canvas>
+<canvas id="sky" aria-label="آسمون شبِ خاطره‌ها"></canvas>
 
 <main id="gate">
-  <h1>Our Little Universe</h1>
+  <h1>دنیای کوچک ما</h1>
   <p id="gateQ"></p>
   <form id="gateForm" autocomplete="off">
-    <input id="gateIn" aria-label="Answer" enterkeyhint="go">
+    <input id="gateIn" aria-label="پاسخ" enterkeyhint="go">
     <button>ورود</button>
   </form>
   <p id="gateErr" role="alert" hidden>یه بار دیگه امتحان کن</p>
@@ -26,13 +26,13 @@
 
 <div id="hud" hidden>
   <div id="together" aria-live="off"></div>
-  <button id="btnSound" aria-pressed="false" aria-label="Sound">♪</button>
-  <button id="btnGyro" aria-label="Tilt control">◎</button>
-  <nav id="chips" aria-label="Memories"></nav>
+  <button id="btnSound" aria-pressed="false" aria-label="صدا">♪</button>
+  <button id="btnGyro" aria-label="کنترل با ژیروسکوپ">◎</button>
+  <nav id="chips" aria-label="خاطره‌ها"></nav>
 </div>
 
 <article id="card" role="dialog" aria-modal="true" aria-labelledby="cTitle" hidden>
-  <button id="cClose" aria-label="Close">×</button>
+  <button id="cClose" aria-label="بستن">×</button>
   <div id="cPhoto"></div>
   <h2 id="cTitle"></h2>
   <p id="cMeta"></p>
@@ -41,5 +41,7 @@
 <div id="toast" role="status"></div>
 
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/map.js"></script>
+<script type="module" src="js/extras.js"></script>
 </body>
 </html>
