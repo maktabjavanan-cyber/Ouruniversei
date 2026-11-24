@@ -11,8 +11,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   text-align:center;background:radial-gradient(ellipse at 50% 40%,#1a1f4d 0%,var(--night) 70%);
   transition:opacity 1.6s ease,visibility 1.6s}
 #gate.out{opacity:0;visibility:hidden}
-#gate h1{margin:0;font-weight:300;font-size:clamp(1.8rem,8vw,3.4rem);letter-spacing:.08em;
-  direction:ltr;color:var(--gold);text-shadow:0 0 28px #e9d3a255}
+#gate h1{margin:0;font-weight:300;font-size:clamp(1.8rem,8vw,3.4rem);color:var(--gold);text-shadow:0 0 28px #e9d3a255}
 #gate p{margin:0;color:var(--lilac);max-width:30ch;line-height:1.9}
 #gateForm{display:flex;gap:.5rem}
 #gateIn{background:#ffffff0f;border:1px solid #b9a6e855;border-radius:999px;padding:.7rem 1.2rem;width:12rem;text-align:center}
@@ -28,7 +27,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #btnSound{left:.8rem}#btnGyro{left:3.8rem}
 #btnSound[aria-pressed=true]{background:var(--rose);color:var(--night)}
 #chips{position:absolute;bottom:calc(var(--sab) + 1rem);inset-inline:0;display:flex;gap:.5rem;
-  justify-content:center;flex-wrap:wrap;padding:0 1rem;direction:ltr}
+  justify-content:center;flex-wrap:wrap;padding:0 1rem}
 #chips button{background:#0b103099;border:1px solid #e8b4c866;border-radius:999px;padding:.45rem .9rem;
   font-size:.78rem;backdrop-filter:blur(8px)}
 
@@ -42,7 +41,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #cClose{position:absolute;top:.5rem;inset-inline-start:.7rem;background:none;border:0;font-size:1.8rem;line-height:1}
 #cPhoto{aspect-ratio:4/3;border-radius:1rem;margin-bottom:1rem;background:linear-gradient(135deg,#e8b4c844,#b9a6e833);
   background-size:cover;background-position:center}
-#cTitle{margin:0 0 .3rem;direction:ltr;text-align:left;font-weight:500;color:var(--rose)}
+#cTitle{margin:0 0 .3rem;unicode-bidi:plaintext;text-align:start;font-weight:500;color:var(--rose)}
 #cMeta{margin:0 0 .8rem;font-size:.82rem;color:var(--gold)}
 #cText{margin:0;line-height:2;font-weight:300}
 #toast{position:fixed;top:30%;inset-inline:0;text-align:center;font-size:1.3rem;color:var(--gold);
