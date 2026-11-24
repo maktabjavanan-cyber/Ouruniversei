@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1030">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>دنیای کوچک ما</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,11 +41,13 @@
   <h2 id="cTitle"></h2>
   <p id="cMeta"></p>
   <p id="cText"></p>
+  <audio id="cAudio" controls hidden preload="none"></audio>
 </article>
 <div id="toast" role="status"></div>
 
 <script type="module" src="js/main.js"></script>
 <script type="module" src="js/map.js"></script>
 <script type="module" src="js/extras.js"></script>
+<script type="module" src="js/sky-extras.js"></script>
 </body>
 </html>
