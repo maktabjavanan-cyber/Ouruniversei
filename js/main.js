@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { CONFIG, MEMORIES } from '../data/memories.js';
+import { SONG, VOICES, FUTURE } from '../data/more.js';
+const ALL = FUTURE ? [...MEMORIES, FUTURE] : MEMORIES;
 
 const $ = s => document.querySelector(s);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -78,11 +80,12 @@ moon.position.set(-260, 170, -520); scene.add(moon);
 const halo = sprite(glow('#b9a6e8'), 230); halo.position.copy(moon.position); scene.add(halo);
 
 /* ---------- memory stars + pink constellation line ---------- */
-const stars = MEMORIES.map((m, i) => {
-  const a = (i - (MEMORIES.length - 1) / 2) * .5, e = Math.sin(i * 1.7) * .18 + .12;
-  const s = sprite(glow(i % 2 ? '#e8b4c8' : '#e9d3a2'), 40);
+const stars = ALL.map((m, i) => {
+  const a = (i - (ALL.length - 1) / 2) * .5, e = Math.sin(i * 1.7) * .18 + .12;
+  const locked = m.unlock && Date.now() < new Date(m.unlock);
+  const s = sprite(glow(locked ? '#6d6a8f' : i % 2 ? '#e8b4c8' : '#e9d3a2'), locked ? 28 : 40);
   s.position.set(Math.sin(a) * Math.cos(e), Math.sin(e), -Math.cos(a) * Math.cos(e)).multiplyScalar(190);
-  s.userData = { m, base: 40, ph: i * 2 }; scene.add(s); return s;
+  s.userData = { m, base: locked ? 28 : 40, ph: i * 2 }; scene.add(s); return s;
 });
 let line;
 if (stars.length > 1) {
@@ -143,13 +146,15 @@ function openCard(m, star) {
   flyTo(star.position, 48, 1.6);
   $('#cTitle').textContent = m.title;
   $('#cMeta').textContent = `${fmt.format(new Date(m.date))} — ${m.place}`;
-  $('#cText').textContent = m.text;
+  const lk = m.unlock && Date.now() < new Date(m.unlock);
+  $('#cText').textContent = lk ? `این ستاره ${fmt.format(new Date(m.unlock))} روشن میشه ✦` : m.text;
+  const au = $('#cAudio'); au.pause(); au.hidden = lk || !VOICES[m.id]; if (!au.hidden) au.src = VOICES[m.id];
   $('#cPhoto').style.backgroundImage = m.photo ? `url(${m.photo})` : '';
   const c = $('#card'); c.hidden = false; c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; $('#cClose').focus();
 }
-function closeCard() { $('#card').hidden = true; flyTo(new THREE.Vector3(-Math.sin(view.yaw), 0, -Math.cos(view.yaw)), 70, 1.2); }
+function closeCard() { $('#card').hidden = true; $('#cAudio').pause(); flyTo(new THREE.Vector3(-Math.sin(view.yaw), 0, -Math.cos(view.yaw)), 70, 1.2); }
 $('#cClose').onclick = closeCard; addEventListener('keydown', e => e.key === 'Escape' && !$('#card').hidden && closeCard());
-$('#chips').append(...MEMORIES.map((m, i) => Object.assign(document.createElement('button'), { textContent: m.title, onclick: () => openCard(m, stars[i]) })));
+$('#chips').append(...ALL.map((m, i) => Object.assign(document.createElement('button'), { textContent: m.title, onclick: () => openCard(m, stars[i]) })));
 
 /* ---------- easter egg: tap the moon 3 times ---------- */
 let moonTaps = 0;
@@ -174,9 +179,11 @@ function startAudio() {
     o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .05);
     g.gain.exponentialRampToValueAtTime(.0001, t + 2.5); o.connect(g).connect(master); o.start(t); o.stop(t + 2.6); }, 2200);
 }
+let song;
 $('#btnSound').onclick = e => {
-  if (!ac) startAudio(); const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
-  e.currentTarget.setAttribute('aria-pressed', on); ac.resume(); master.gain.linearRampToValueAtTime(on ? .9 : 0, ac.currentTime + 1.5);
+  const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on);
+  if (SONG) { song = song || Object.assign(new Audio(SONG), { loop: true, volume: .6 }); on ? song.play().catch(() => {}) : song.pause(); return; }
+  if (!ac) startAudio(); ac.resume(); master.gain.linearRampToValueAtTime(on ? .9 : 0, ac.currentTime + 1.5);
 };
 
 /* ---------- gate + cinematic entrance ---------- */
@@ -204,6 +211,7 @@ setInterval(() => {
 /* ---------- main loop ---------- */
 function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
+window.__ou = { THREE, scene, camera, glow, sprite };   // برای sky-extras.js
 let last = performance.now(), nextMeteor = 4, lineN = 0;
 renderer.setAnimationLoop(now => {
   const dt = Math.min((now - last) / 1000, .05); last = now; if (!reduce) uTime.value += dt;

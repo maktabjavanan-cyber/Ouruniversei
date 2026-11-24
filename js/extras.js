@@ -3,6 +3,7 @@ import { CONFIG, MEMORIES } from '../data/memories.js';
 import { LETTERS } from '../data/letters.js';
 import { SURPRISES } from '../data/surprises.js';
 import { renderGame } from './game.js';
+import { renderCoupons, renderTodo, renderCapsule } from './more.js';
 
 const $ = s => document.querySelector(s);
 const el = (t, p = {}, ...k) => { const e = Object.assign(document.createElement(t), p); e.append(...k); return e; };
@@ -103,7 +104,7 @@ function renderWishes(b) {
     el('small', { textContent: 'آرزوها فقط روی همین گوشی ذخیره میشن.' })); paint();
 }
 
-const TABS = { 'امروز': renderToday, 'آسمون': renderSky, 'نامه‌ها': renderLetters, 'آرزوها': renderWishes, 'بازی': renderGame };
+const TABS = { 'امروز': renderToday, 'آسمون': renderSky, 'نامه‌ها': renderLetters, 'آرزوها': renderWishes, 'بازی': renderGame, 'کوپن‌ها': renderCoupons, 'کارهامون': renderTodo, 'کپسول': renderCapsule };
 function show(name) {
   head.querySelectorAll('[data-t]').forEach(x => x.setAttribute('aria-pressed', x.dataset.t === name));
   body.replaceChildren(); TABS[name](body);
