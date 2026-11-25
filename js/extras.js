@@ -4,10 +4,14 @@ import { LETTERS } from '../data/letters.js';
 import { SURPRISES } from '../data/surprises.js';
 import { renderGame } from './game.js';
 import { renderCoupons, renderTodo, renderCapsule } from './more.js';
+import { renderGallery } from './gallery.js';
+import { WISH_SEED, GALLERY } from '../data/extra.js';
+import { FIREBASE } from '../data/firebase.js';
+import { renderGuestbook } from './guestbook.js';
 
 const $ = s => document.querySelector(s);
 const el = (t, p = {}, ...k) => { const e = Object.assign(document.createElement(t), p); e.append(...k); return e; };
-const fmt = new Intl.DateTimeFormat('fa-IR-u-ca-gregory', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran' });
+const fmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 const fa = n => n.toLocaleString('fa-IR');
 const tehran = d => new Date(d).toLocaleString('sv-SE', { timeZone: 'Asia/Tehran' }).replace(' ', 'T').slice(0, 16);
 
@@ -92,7 +96,7 @@ function renderLetters(b) {
 
 /* ---- Wishes: آرزوها (روی همین دستگاه ذخیره میشن) ---- */
 function renderWishes(b) {
-  const key = 'ou-wishes'; let list = []; try { list = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+  const key = 'ou-wishes'; let list = null; try { list = JSON.parse(localStorage.getItem(key)); } catch {} if (!list) list = WISH_SEED.map(w => ({ ...w }));
   const save = () => { try { localStorage.setItem(key, JSON.stringify(list)); } catch {} };
   const ul = el('ul', { className: 'xlist' }), inp = el('input', { placeholder: 'یه آرزو بنویس…', maxLength: 140 });
   const paint = () => ul.replaceChildren(...list.map((w, i) => el('li', {},
@@ -104,7 +108,10 @@ function renderWishes(b) {
     el('small', { textContent: 'آرزوها فقط روی همین گوشی ذخیره میشن.' })); paint();
 }
 
-const TABS = { 'امروز': renderToday, 'آسمون': renderSky, 'نامه‌ها': renderLetters, 'آرزوها': renderWishes, 'بازی': renderGame, 'کوپن‌ها': renderCoupons, 'کارهامون': renderTodo, 'کپسول': renderCapsule };
+const TABS = { 'امروز': renderToday, 'آسمون': renderSky, 'نامه‌ها': renderLetters, 'آرزوها': renderWishes, 'بازی': renderGame, 'کپسول': renderCapsule, 'گالری': renderGallery, 'کتاب مهمان': renderGuestbook };
+if (!LETTERS.some(l => !l.text.startsWith('TODO'))) delete TABS['نامه‌ها'];   // تب‌های خالی نشون داده نمیشن
+if (!GALLERY.some(p => p.src)) delete TABS['گالری'];
+if (!FIREBASE) delete TABS['کتاب مهمان'];
 function show(name) {
   head.querySelectorAll('[data-t]').forEach(x => x.setAttribute('aria-pressed', x.dataset.t === name));
   body.replaceChildren(); TABS[name](body);

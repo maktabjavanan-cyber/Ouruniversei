@@ -3,7 +3,7 @@ import { MEMORIES } from '../data/memories.js';
 import { COORDS } from '../data/places.js';
 
 const $ = s => document.querySelector(s);
-const fmt = new Intl.DateTimeFormat('fa-IR-u-ca-gregory', { dateStyle: 'long', timeZone: 'Asia/Tehran' });
+const fmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long', timeZone: 'Asia/Tehran' });
 const items = [...MEMORIES].sort((a, b) => new Date(a.date) - new Date(b.date));
 
 document.head.append(Object.assign(document.createElement('style'), { textContent: `

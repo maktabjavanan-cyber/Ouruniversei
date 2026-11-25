@@ -32,7 +32,7 @@ const ITEMS = {
 };
 const DEFAULT = { items: [{ k: 'rug', x: 360, y: 530 }, { k: 'sofa', x: 190, y: 470 }, { k: 'lamp', x: 70, y: 455 }, { k: 'plant', x: 650, y: 470 }, { k: 'catbed', x: 520, y: 500 }, { k: 'frame', x: 150, y: 220 }], theme: 0, cat: 0 };
 
-function drawCat(g, c, t, col) {
+function drawCat(g, c, t, col, name) {
   const walk = c.mode === 'walk', sleep = c.mode === 'sleep', b = Math.sin(t * 2) * 1.2;
   g.save(); g.translate(c.x, c.y); g.scale(c.dir, 1);
   ell(g, 0, 0, 30, 6, 'rgba(0,0,0,.25)');
@@ -51,6 +51,7 @@ function drawCat(g, c, t, col) {
   g.textAlign = 'center';
   if (sleep) { g.font = 'bold 18px sans-serif'; g.fillStyle = '#f4f1ff'; g.globalAlpha = .8; g.fillText('z Z', c.x + 34, c.y - 78 - (t * 12) % 14); g.globalAlpha = 1; }
   if (c.say > 0) { g.font = 'bold 20px Vazirmatn,sans-serif'; g.fillStyle = '#fff'; g.fillText('میو~', c.x, c.y - 94); }
+  if (name) { g.font = '13px Vazirmatn,sans-serif'; g.fillStyle = '#f4f1ffcc'; g.fillText(name, c.x, c.y + 20); }
 }
 
 export function renderGame(b) {
@@ -76,7 +77,8 @@ export function renderGame(b) {
   const bCat = el('button', { onclick: () => { S.cat = (S.cat + 1) % CATS.length; save(); lab(); } });
   const bClear = el('button', { textContent: 'خالی کردن خونه', onclick: () => { if (confirm('همه‌ی اسباب برداشته بشه؟')) { S.items = []; save(); } } });
   const lab = () => { bTheme.textContent = 'رنگ دیوار: ' + THEMES[S.theme].n; bCat.textContent = 'رنگ گربه: ' + CATS[S.cat].n; }; lab();
-  row.append(bTheme, bCat, bClear);
+  const nm = el('input', { placeholder: 'اسم گربه‌مون…', maxLength: 16, value: S.name || '', oninput: e => { S.name = e.target.value.trim(); save(); } });
+  row.append(nm, bTheme, bCat, bClear);
   b.append(row, cv, el('small', { textContent: 'اسباب رو بکش و جابه‌جا کن؛ برای برداشتن، بندازش روی سطل. گربه رو لمس کن 🐈' }));
 
   const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
@@ -114,7 +116,7 @@ export function renderGame(b) {
     g.fillStyle = '#e9d3a2'; g.fillRect(363, 56, 4, 128); g.fillRect(296, 118, 138, 4);
     const list = order().map(it => ({ y: ITEMS[it.k].back ? -9999 : it.y, f: () => ITEMS[it.k].draw(g, t), it }));
     list.push({ y: cat.y + (cat.mode === 'sleep' ? -8 : 0), cat: 1 }); list.sort((a, b) => a.y - b.y);
-    for (const o of list) { if (o.cat) { drawCat(g, cat, t, col); continue; }
+    for (const o of list) { if (o.cat) { drawCat(g, cat, t, col, S.name); continue; }
       g.save(); g.translate(o.it.x, o.it.y); o.f(); g.restore();
       if (drag && drag.it === o.it) { const d = ITEMS[o.it.k]; g.strokeStyle = '#e9d3a2'; g.setLineDash([6, 5]); g.lineWidth = 2; g.strokeRect(o.it.x - d.w / 2, o.it.y - d.h, d.w, d.h + 6); g.setLineDash([]); } }
     g.textAlign = 'center'; g.font = '24px sans-serif';

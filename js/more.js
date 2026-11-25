@@ -30,7 +30,7 @@ export function renderCapsule(b) {
   const st = store('ou-capsule', null); let c = st.get(), out = el('div');
   const paint = () => { out.replaceChildren();
     if (c && Date.now() < c.at) out.append(el('div', { className: 'xcard' }, el('h3', { textContent: '🔒 کپسول بسته‌ست' }),
-      el('p', { textContent: new Date(c.at).toLocaleDateString('fa-IR-u-ca-gregory', { dateStyle: 'long' }) + ' باز میشه' })));
+      el('p', { textContent: new Date(c.at).toLocaleDateString('fa-IR', { dateStyle: 'long' }) + ' باز میشه' })));
     else if (c) out.append(el('div', { className: 'xcard' }, el('h3', { textContent: '💌 کپسول باز شد' }), el('p', { textContent: c.text }),
       el('button', { textContent: 'یه کپسول تازه', onclick: () => { c = null; st.set(null); paint(); } })));
     else { const ta = el('textarea', { rows: 6, placeholder: 'برای آینده‌مون بنویس…' }), dt = el('input', { type: 'date' });

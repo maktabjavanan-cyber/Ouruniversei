@@ -141,18 +141,19 @@ $('#btnGyro').onclick = async () => {
 };
 
 /* ---------- memory card ---------- */
-const fmt = new Intl.DateTimeFormat('fa-IR-u-ca-gregory', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran' });
+const fmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 function openCard(m, star) {
   flyTo(star.position, 48, 1.6);
   $('#cTitle').textContent = m.title;
   $('#cMeta').textContent = `${fmt.format(new Date(m.date))} — ${m.place}`;
   const lk = m.unlock && Date.now() < new Date(m.unlock);
   $('#cText').textContent = lk ? `این ستاره ${fmt.format(new Date(m.unlock))} روشن میشه ✦` : m.text;
+  $('#cReply').textContent = lk || !m.reply ? '' : 'زهرا:\n' + m.reply; $('#cReply').hidden = lk || !m.reply;
   const au = $('#cAudio'); au.pause(); au.hidden = lk || !VOICES[m.id]; if (!au.hidden) au.src = VOICES[m.id];
   $('#cPhoto').style.backgroundImage = m.photo ? `url(${m.photo})` : '';
-  const c = $('#card'); c.hidden = false; c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; $('#cClose').focus();
+  const c = $('#card'); c.hidden = false; c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; $('#cClose').focus(); window.__ou?.onOpen?.(m.id);
 }
-function closeCard() { $('#card').hidden = true; $('#cAudio').pause(); flyTo(new THREE.Vector3(-Math.sin(view.yaw), 0, -Math.cos(view.yaw)), 70, 1.2); }
+function closeCard() { $('#card').hidden = true; $('#cAudio').pause(); window.__ou?.onClose?.(); flyTo(new THREE.Vector3(-Math.sin(view.yaw), 0, -Math.cos(view.yaw)), 70, 1.2); }
 $('#cClose').onclick = closeCard; addEventListener('keydown', e => e.key === 'Escape' && !$('#card').hidden && closeCard());
 $('#chips').append(...ALL.map((m, i) => Object.assign(document.createElement('button'), { textContent: m.title, onclick: () => openCard(m, stars[i]) })));
 
@@ -187,13 +188,8 @@ $('#btnSound').onclick = e => {
 };
 
 /* ---------- gate + cinematic entrance ---------- */
-$('#gateQ').textContent = CONFIG.gate.question;
-$('#gateForm').onsubmit = e => {
-  e.preventDefault();
-  const a = $('#gateIn').value.trim().toLowerCase();
-  if (!CONFIG.gate.answers.some(x => x.toLowerCase() === a)) { $('#gateErr').hidden = false; return; }
-  $('#gate').classList.add('out'); startEntrance();
-};
+$('#gateQ').textContent = 'برای ورود به دنیامون لمس کن ✦';
+$('#gateForm').onsubmit = e => { e.preventDefault(); $('#gate').classList.add('out'); startEntrance(); };
 let enter0 = 0, started = false;
 function startEntrance() {
   started = true; entering = !reduce; enter0 = performance.now(); if (reduce) camera.position.z = 0;
@@ -203,15 +199,18 @@ camera.position.z = 900; // start far away, outside the star shell
 
 /* ---------- together counter ---------- */
 const since = new Date(CONFIG.togetherSince);
-setInterval(() => {
-  const s = Math.max(0, (Date.now() - since) / 1000 | 0), f = new Intl.NumberFormat('fa-IR');
-  $('#together').textContent = `${f.format(s / 86400 | 0)} روز و ${f.format(s % 86400 / 3600 | 0)} ساعت و ${f.format(s % 3600 / 60 | 0)} دقیقه با هم`;
+setInterval(() => {   // ساعت‌شمار: سال و ماه و روز و ساعت:دقیقه:ثانیه از اولین دیدار
+  const f = n => n.toLocaleString('fa-IR'), now = new Date(); let y = now.getFullYear() - since.getFullYear(), mo = now.getMonth() - since.getMonth(), d = now.getDate() - since.getDate();
+  let h = now.getHours() - since.getHours(), mi = now.getMinutes() - since.getMinutes(), sc = now.getSeconds() - since.getSeconds();
+  if (sc < 0) { sc += 60; mi--; } if (mi < 0) { mi += 60; h--; } if (h < 0) { h += 24; d--; }
+  if (d < 0) { d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); mo--; } if (mo < 0) { mo += 12; y--; }
+  $('#together').textContent = `از اولین دیدارمون: ${[y && f(y) + ' سال', mo && f(mo) + ' ماه', f(d) + ' روز'].filter(Boolean).join(' و ')} و ${[h, mi, sc].map(x => f(x).padStart(2, '۰')).join(':')}`;
 }, 1000);
 
 /* ---------- main loop ---------- */
 function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
-window.__ou = { THREE, scene, camera, glow, sprite };   // برای sky-extras.js
+window.__ou = { THREE, scene, camera, glow, sprite, shoot, flyTo };   // برای sky-extras.js
 let last = performance.now(), nextMeteor = 4, lineN = 0;
 renderer.setAnimationLoop(now => {
   const dt = Math.min((now - last) / 1000, .05); last = now; if (!reduce) uTime.value += dt;
