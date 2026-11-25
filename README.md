@@ -30,3 +30,26 @@ assets/           # عکس‌ها (مثلاً assets/met.jpg)
 - پیام صوتی: فایل mp3 رو بذار توی `assets/audio/` و توی `VOICES` به id خاطره وصلش کن. آهنگ پس‌زمینه: `SONG`.
 - ستاره‌ی آینده (`FUTURE`)، شمارنده‌ی روز مهم (`NEXT_DAY`)، صورت فلکی (`HEART`)، کوپن‌ها و لیست کارها.
 - PWA: توی مرورگر گوشی «Add to Home screen» بزن تا مثل اپ نصب بشه.
+
+## ورود
+رمز حذف شده؛ ورود فقط با یه لمس روی دکمه‌ی «ورود» است. متن‌های سینمایی شروع و گالری عکس‌ها توی `data/extra.js` هستن.
+
+## کتاب مهمان (Firebase، اختیاری)
+1. توی console.firebase.google.com یه پروژه بساز، بعد Build ← Firestore Database ← Create database.
+2. Project settings ← Your apps ← آیکون وب `</>` ← config رو کپی کن و توی `data/firebase.js` بذار.
+3. Firestore ← Rules رو این بذار و Publish کن:
+```
+rules_version = '2';
+service cloud.firestore { match /databases/{db}/documents { match /guestbook/{id} {
+  allow read: if true;
+  allow create: if request.resource.data.msg is string && request.resource.data.msg.size() <= 300
+                && request.resource.data.name is string && request.resource.data.name.size() <= 30;
+  allow update, delete: if false;
+} } }
+```
+هر کی لینک سایت رو داشته باشه می‌تونه پیام بذاره؛ پاک کردن پیام‌ها فقط از کنسول Firebase ممکنه.
+
+## نکته‌ها
+- عکس هر خاطره: `assets/photos/<id>.jpg` (id ها: met, colorful, excuse, concert). پیام صوتی: `VOICES` توی `data/more.js`.
+- پایان سایت (شهاب‌باران و نامه‌ی آخر) بعد از دیدن همه‌ی خاطره‌ها پخش میشه. برای تست، آخر آدرس سایت `#finale` بذار.
+- تب کتاب مهمان تا وقتی `data/firebase.js` رو پر نکنی دیده نمیشه. تب نامه‌ها و گالری هم تا وقتی محتوا نذاری نمایش داده نمیشن.
